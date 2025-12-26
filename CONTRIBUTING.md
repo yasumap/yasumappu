@@ -8,12 +8,12 @@
 
 ### 1. ブランチを作成
 
-mainブランチから新しいブランチを作成します。
+developブランチから新しいブランチを作成します。
 
 ```bash
-# 最新のmainブランチを取得
-git checkout main
-git pull origin main
+# 最新のdevelopブランチを取得
+git checkout develop
+git pull origin develop
 
 # 新しいブランチを作成
 git checkout -b feature/機能名
@@ -27,14 +27,6 @@ git checkout -b fix/バグ名
 - リファクタリング: `refactor/内容` (例: `refactor/simplify-api`)
 
 ### 2. 開発
-
-#### コーディング規約
-
-- TypeScriptの型を明示的に書く
-- コンポーネント名はPascalCase
-- 関数名・変数名はcamelCase
-- ファイル名はkebab-case（コンポーネントはPascalCase）
-- 意味のある変数名・関数名を使う
 
 #### コミットメッセージ
 
@@ -86,25 +78,8 @@ git push origin feature/機能名
 
 2. GitHubでPRを作成
    - PRテンプレートに沿って記入
-   - レビュアーを指定（チームメンバー）
-   - 関連するIssueをリンク
 
-### 4. コードレビュー
-
-#### レビュアー側
-
-- コードの品質をチェック
-- ロジックに問題がないか確認
-- 改善提案があればコメント
-- 承認（Approve）またはコメント
-
-#### PR作成者側
-
-- レビューコメントに対応
-- 修正したらコメントで報告
-- すべて対応したら再レビューを依頼
-
-### 5. マージ
+### 4. マージ
 
 - レビューが承認されたらマージ
 - マージ後はブランチを削除
