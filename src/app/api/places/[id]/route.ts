@@ -11,7 +11,7 @@ export async function DELETE(
             where: { id },
         });
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: 'Failed' }, { status: 500 });
     }
 }

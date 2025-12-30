@@ -31,7 +31,7 @@ export async function POST(request: Request) {
         });
 
         return NextResponse.json(place);
-    } catch (error) {
+    } catch (_error) {
         return NextResponse.json({ error: 'Failed' }, { status: 500 });
     }
 }

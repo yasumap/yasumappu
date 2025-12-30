@@ -1,5 +1,5 @@
 // src/types/declarations.d.ts
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // react-map-glの型チェックを回避する宣言
 declare module 'react-map-gl' {
     export * from 'react-map-gl/dist/esm/exports-s';
