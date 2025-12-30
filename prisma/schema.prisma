@@ -28,3 +28,25 @@ model Post {
  author    User    @relation(fields: [authorId], references: [id])
  authorId  Int
 }
+
+enum PlaceCategory {
+  CAFE
+  LIBRARY
+  PARK
+  COWORKING
+  BENCH
+  OTHER
+}
+
+model Place {
+  id              String   @id @default(cuid())
+  name            String
+  address         String?
+  latitude        Float
+  longitude       Float
+  category        PlaceCategory
+  availableSeats  Int
+  totalSeats      Int @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
