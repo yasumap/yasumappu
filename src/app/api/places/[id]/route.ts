@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/src/lib/prisma';
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params; // Next.jsのバージョンによっては await paramsが必要な場合があります
+        const { id } = await context.params;
         await prisma.place.delete({
             where: { id },
         });

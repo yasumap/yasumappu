@@ -15,7 +15,7 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { name, category, position, availableSeats } = body;
+        const { name, category, position, availableSeats, address, totalSeats } = body;
 
         // Prismaへの保存（lat/lng → latitude/longitude変換）
         const place = await prisma.place.create({
@@ -25,6 +25,8 @@ export async function POST(request: Request) {
                 latitude: position.lat,  // ここで変換
                 longitude: position.lng, // ここで変換
                 availableSeats,
+                address: address || null,
+                totalSeats: totalSeats || 0,
             },
         });
 
