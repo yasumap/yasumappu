@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import Map, { Marker } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import type { MapLayerMouseEvent } from 'mapbox-gl';
 
 // 定義済みの型と自作フック
 import { MapPosition } from '@/src/types/map';
@@ -29,6 +28,7 @@ export default function MapContainer() {
     }, [fetchPlaces]);
 
     // 地面クリック処理
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleMapClick = useCallback((event: any) => {
         const { lat, lng } = event.lngLat;
         setTargetType('new');
@@ -75,6 +75,7 @@ export default function MapContainer() {
                         longitude={place.position.lng}
                         latitude={place.position.lat}
                         anchor="bottom"
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         onClick={(e: any) => handleMarkerClick(e, place.id)}
                     >
                         <BenchIcon />
