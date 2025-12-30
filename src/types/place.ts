@@ -18,5 +18,6 @@ export enum PlaceCategory {
   LIBRARY = 'LIBRARY',
   PARK = 'PARK',
   COWORKING = 'COWORKING',
+  BENCH = 'BENCH',
   OTHER = 'OTHER',
 }
