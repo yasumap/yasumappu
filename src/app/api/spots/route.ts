@@ -8,20 +8,12 @@ const createSpotSchema = z.object({
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
   totalSeats: z.number().int().min(1).max(1000),
-  availableSeats: z.number().int().min(0),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validated = createSpotSchema.parse(body);
-
-    if (validated.availableSeats > validated.totalSeats) {
-      return NextResponse.json(
-        { error: '空き座席数は総座席数を超えることはできません' },
-        { status: 400 }
-      );
-    }
 
     const spot = await prisma.restSpot.create({
       data: {
@@ -30,7 +22,7 @@ export async function POST(request: NextRequest) {
         latitude: validated.latitude,
         longitude: validated.longitude,
         totalSeats: validated.totalSeats,
-        availableSeats: validated.availableSeats,
+        availableSeats: validated.totalSeats,
       },
     });
 

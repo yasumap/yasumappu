@@ -22,7 +22,6 @@ export default function SpotRegistrationModal({
     name: '',
     description: '',
     totalSeats: 10,
-    availableSeats: 10,
   });
 
   if (!isOpen) return null;
@@ -42,7 +41,6 @@ export default function SpotRegistrationModal({
         name: '',
         description: '',
         totalSeats: 10,
-        availableSeats: 10,
       });
     } catch (err) {
       console.error(err);
@@ -80,46 +78,24 @@ export default function SpotRegistrationModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold mb-1.5 text-gray-700">
-                総座席数 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={formData.totalSeats}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    totalSeats: parseInt(e.target.value) || 0,
-                  })
-                }
-                required
-                min={1}
-                max={1000}
-                className="w-full px-3 py-2.5 text-base rounded-xl border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-gray-400 transition-all duration-200"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold mb-1.5 text-gray-700">
-                空き座席数 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                value={formData.availableSeats}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    availableSeats: parseInt(e.target.value) || 0,
-                  })
-                }
-                required
-                min={0}
-                max={formData.totalSeats}
-                className="w-full px-3 py-2.5 text-base rounded-xl border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-gray-400 transition-all duration-200"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-bold mb-1.5 text-gray-700">
+              総座席数 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              value={formData.totalSeats}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  totalSeats: parseInt(e.target.value) || 0,
+                })
+              }
+              required
+              min={1}
+              max={1000}
+              className="w-full px-3 py-2.5 text-base rounded-xl border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-gray-400 transition-all duration-200"
+            />
           </div>
 
           <div>

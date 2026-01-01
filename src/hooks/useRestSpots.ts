@@ -7,7 +7,6 @@ interface CreateSpotData {
   latitude: number;
   longitude: number;
   totalSeats: number;
-  availableSeats: number;
 }
 
 export function useRestSpots() {
