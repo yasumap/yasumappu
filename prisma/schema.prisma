@@ -5,12 +5,11 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "binary"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
@@ -27,4 +26,19 @@ model Post {
  published Boolean @default(false)
  author    User    @relation(fields: [authorId], references: [id])
  authorId  Int
+}
+
+model RestSpot {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  latitude       Float
+  longitude      Float
+  totalSeats     Int
+  availableSeats Int
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([latitude, longitude])
 }
