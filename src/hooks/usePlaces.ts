@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Place, PlaceCategory } from '@/src/types/place';
-import { MapPosition } from '@//src/types/map';
+import { Place, PlaceCategory } from '@/types/place';
+import { MapPosition } from '@/types/map';
 
 export function usePlaces() {
     const [places, setPlaces] = useState<Place[]>([]);
