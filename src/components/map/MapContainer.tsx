@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapStore } from '@/hooks/useMapStore';
+import type { RestSpot } from '@/hooks/useMapStore';
 import { categoryColors, categoryIcons } from '@/lib/categoryIcons';
 import SpotRegistrationModal from '../spots/SpotRegistrationModal';
 import AddSpotButton from './AddSpotButton';
@@ -35,7 +36,7 @@ export default function MapContainer({
   } | null>(null);
 
   const { spots, setSelectedSpot, fetchSpots, setBounds } = useMapStore();
-  const nearestCandidatesRef = useRef<any[]>([]);
+  const nearestCandidatesRef = useRef<RestSpot[]>([]);
   const nearestIndexRef = useRef<number>(0);
 
   useEffect(() => {

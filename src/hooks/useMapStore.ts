@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { MapBounds, MapPosition } from '@/types/map';
 
-interface RestSpot {
+export interface RestSpot {
   id: string;
   name: string;
   description?: string | null;
