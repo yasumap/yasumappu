@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from "next/link";
 import AmountSlider from '@/components/ui/AmountSlider';
 
 export default function UITestPage() {
@@ -77,12 +78,12 @@ export default function UITestPage() {
         </div>
 
         <div className="mt-6 text-center">
-          <a 
+          <Link
             href="/"
             className="text-sm text-gray-600 hover:text-gray-900 underline"
           >
             ← トップページに戻る
-          </a>
+          </Link>
         </div>
       </div>
     </div>
