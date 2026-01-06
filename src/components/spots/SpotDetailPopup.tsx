@@ -2,12 +2,23 @@
 
 import { useRestSpots } from '@/hooks/useRestSpots';
 import { useMapStore } from '@/hooks/useMapStore';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function SpotDetailPopup() {
   const { selectedSpot, setSelectedSpot } = useMapStore();
   const { deleteSpot, isDeleting } = useRestSpots();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 16, left: 16 });
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const draggingRef = useRef(false);
+  const offsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener('pointermove', () => { });
+      window.removeEventListener('pointerup', () => { });
+    };
+  }, []);
 
   if (!selectedSpot) return null;
 
@@ -27,11 +38,46 @@ export default function SpotDetailPopup() {
     100
   ).toFixed(0);
 
+  const onPointerMove = (ev: PointerEvent) => {
+    if (!draggingRef.current) return;
+    const rect = containerRef.current?.getBoundingClientRect();
+    const nx = ev.clientX - offsetRef.current.x;
+    const ny = ev.clientY - offsetRef.current.y;
+
+    const maxLeft = rect ? window.innerWidth - rect.width - 8 : window.innerWidth - 200;
+    const maxTop = rect ? window.innerHeight - rect.height - 8 : window.innerHeight - 200;
+
+    setPos({
+      left: Math.max(8, Math.min(nx, maxLeft)),
+      top: Math.max(8, Math.min(ny, maxTop)),
+    });
+  };
+
+  const onPointerUp = () => {
+    draggingRef.current = false;
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    offsetRef.current.x = startX - pos.left;
+    offsetRef.current.y = startY - pos.top;
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  };
+
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-40 animate-slide-up">
-      <div className="rounded-2xl shadow-xl p-4 bg-white/98 backdrop-blur-md border border-gray-200">
+    <div
+      ref={containerRef}
+      className="z-40 animate-slide-up"
+      style={{ position: 'fixed', top: pos.top, left: pos.left }}
+    >
+      <div className="rounded-2xl shadow-xl p-4 bg-white/98 backdrop-blur-md border border-gray-200 max-w-sm w-[min(92vw,420px)]">
         <div className="flex justify-between items-start mb-3">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1" onPointerDown={onPointerDown} style={{ touchAction: 'none', cursor: 'grab' }}>
             <h3 className="text-lg font-bold text-gray-900 truncate">{selectedSpot.name}</h3>
           </div>
           <button
@@ -69,8 +115,8 @@ export default function SpotDetailPopup() {
                   backgroundColor: Number(occupancyRate) < 50
                     ? '#10b981'
                     : Number(occupancyRate) < 80
-                    ? '#f59e0b'
-                    : '#ef4444'
+                      ? '#f59e0b'
+                      : '#ef4444'
                 }}
               />
             </div>
