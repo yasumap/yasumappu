@@ -44,8 +44,8 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 p-4 sm:p-8">
+      <div className="max-w-2xl mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             金額アンケート
@@ -55,7 +55,7 @@ export default function SurveyPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <form onSubmit={handleSubmit} className="bg-white/95 rounded-2xl shadow-xl p-6 sm:p-10 border border-gray-100">
           {/* メールアドレス入力 */}
           <div className="mb-8">
             <label className="block text-sm font-bold mb-3 text-gray-700">
@@ -98,9 +98,9 @@ export default function SurveyPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-4 rounded-xl text-white font-bold text-base transition-all duration-200 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full py-4 rounded-xl text-white font-bold text-base transition-all duration-200 active:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             style={{
-              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+              background: 'linear-gradient(90deg, #6366f1 0%, #06b6d4 100%)',
             }}
           >
             {isSubmitting ? '送信中...' : 'アンケートを送信'}
