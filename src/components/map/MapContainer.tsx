@@ -173,6 +173,23 @@ export default function MapContainer({
   // We intentionally preserve the candidates/index across button presses
   // so repeated presses cycle through the sorted list.
 
+  // ハーバーサイン公式距離計算
+  const haversineDistance = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+    const toRad = (v: number) => (v * Math.PI) / 180;
+    const R = 6371e3; // metres
+    const φ1 = toRad(a.lat);
+    const φ2 = toRad(b.lat);
+    const Δφ = toRad(b.lat - a.lat);
+    const Δλ = toRad(b.lng - a.lng);
+
+    const sinΔφ = Math.sin(Δφ / 2);
+    const sinΔλ = Math.sin(Δλ / 2);
+    const aa = sinΔφ * sinΔφ + Math.cos(φ1) * Math.cos(φ2) * sinΔλ * sinΔλ;
+    const c = 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
+
+    return R * c;
+  };
+
   const handleGetCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -203,21 +220,72 @@ export default function MapContainer({
     });
   };
 
-  const haversineDistance = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
-    const toRad = (v: number) => (v * Math.PI) / 180;
-    const R = 6371e3; // metres
-    const φ1 = toRad(a.lat);
-    const φ2 = toRad(b.lat);
-    const Δφ = toRad(b.lat - a.lat);
-    const Δλ = toRad(b.lng - a.lng);
+  // マップロード時に最寄りのベンチを自動表示
+  useEffect(() => {
+    if (!mapLoaded) return;
 
-    const sinΔφ = Math.sin(Δφ / 2);
-    const sinΔλ = Math.sin(Δλ / 2);
-    const aa = sinΔφ * sinΔφ + Math.cos(φ1) * Math.cos(φ2) * sinΔλ * sinΔλ;
-    const c = 2 * Math.atan2(Math.sqrt(aa), Math.sqrt(1 - aa));
+    const autoShowNearestBench = async () => {
+      try {
+        const userCoords = await handleGetCurrentLocation();
 
-    return R * c;
-  };
+        // 最新のスポットをサーバーから取得（画面外も含む）
+        await fetchSpots();
+        const allSpots = useMapStore.getState().spots;
+
+        if (!allSpots || allSpots.length === 0) {
+          return;
+        }
+
+        // 距離でソートして保持（画面外のスポットも含む）
+        if (!nearestCandidatesRef.current || nearestCandidatesRef.current.length === 0) {
+          const list = allSpots
+            .map((s) => ({ spot: s, dist: haversineDistance(userCoords, { lat: s.latitude, lng: s.longitude }) }))
+            .sort((a, b) => a.dist - b.dist)
+            .map((p) => p.spot)
+            .slice(0, 5); // 上位5件までに制限
+
+          nearestCandidatesRef.current = list;
+          nearestIndexRef.current = 0;
+        }
+
+        const candidates = nearestCandidatesRef.current;
+        const target = candidates[0]; // 最初のアイテムを表示
+
+        // ユーザーマーカーを立てる
+        if (map.current) {
+          if (userMarkerRef.current) {
+            userMarkerRef.current.remove();
+            userMarkerRef.current = null;
+          }
+
+          const el = document.createElement('div');
+          el.className = 'text-2xl';
+          el.innerText = '📍';
+
+          userMarkerRef.current = new mapboxgl.Marker({ element: el })
+            .setLngLat([userCoords.lng, userCoords.lat])
+            .addTo(map.current);
+
+          // 両方が見えるように境界を作る
+          const bounds = new mapboxgl.LngLatBounds([userCoords.lng, userCoords.lat], [userCoords.lng, userCoords.lat]);
+          bounds.extend([target.longitude, target.latitude]);
+
+          map.current.fitBounds(bounds, { padding: 80, maxZoom: 16, duration: 800 });
+        }
+
+        // モーダル表示（詳細）
+        setSelectedSpot(target);
+
+        // ボタン押下時は次のインデックスから開始するようにカウンターを進める
+        nearestIndexRef.current = 1;
+      } catch (err) {
+        console.error('Auto-show nearest bench error:', err);
+        // エラーでも処理を続ける
+      }
+    };
+
+    autoShowNearestBench();
+  }, [mapLoaded, fetchSpots, setSelectedSpot]);
 
   const handleShowNearestBench = async () => {
     try {
