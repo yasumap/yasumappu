@@ -8,9 +8,10 @@ const SURVEY_URL = 'https://yasumappu.vercel.app/ui';
 
 const INITIAL_STATIC_MS = 35000;
 const PULSE_DELAY_MS = 15000;
-const MOVE_DURATION_MS = 25000;
+const MOVE_DURATION_MS = 19231;
 const REST_DURATION_MS = 10000;
-const SCALE_STEP = 0.05;
+const MAX_LAPS = 4;
+const SCALE_STEP = 0.1;
 const MAX_SCALE_STEPS = 3;
 const REST_SCALE_TRIGGER_MS = MOVE_DURATION_MS + 9000;
 
@@ -77,6 +78,8 @@ export default function CloudCtaButton() {
   const startTimeRef = useRef<number | null>(null);
   const lastEdgeRef = useRef<number | null>(null);
   const bounceTimeoutRef = useRef<number | null>(null);
+  const lastPositionRef = useRef<{ x: number; y: number } | null>(null);
+  const motionStoppedRef = useRef(false);
 
   const [frozen, setFrozen] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -116,12 +119,32 @@ export default function CloudCtaButton() {
       const bounds = boundsRef.current;
 
       if (bounds && positionRef.current) {
+        if (motionStoppedRef.current) {
+          const lastPosition = lastPositionRef.current;
+          if (lastPosition) {
+            positionRef.current.style.transform = `translate3d(${lastPosition.x}px, ${lastPosition.y}px, 0)`;
+          }
+          return;
+        }
+
         let x = bounds.maxX;
         let y = bounds.minY;
 
         if (elapsed >= INITIAL_STATIC_MS) {
           const afterStart = elapsed - INITIAL_STATIC_MS;
-          const cycleElapsed = afterStart % (MOVE_DURATION_MS + REST_DURATION_MS);
+          const cycleDuration = MOVE_DURATION_MS + REST_DURATION_MS;
+          const cycleIndex = Math.floor(afterStart / cycleDuration);
+
+          if (cycleIndex >= MAX_LAPS) {
+            motionStoppedRef.current = true;
+            const lastPosition = lastPositionRef.current;
+            if (lastPosition) {
+              positionRef.current.style.transform = `translate3d(${lastPosition.x}px, ${lastPosition.y}px, 0)`;
+            }
+            return;
+          }
+
+          const cycleElapsed = afterStart % cycleDuration;
 
           if (cycleElapsed < MOVE_DURATION_MS) {
             const progress = cycleElapsed / MOVE_DURATION_MS;
@@ -159,6 +182,7 @@ export default function CloudCtaButton() {
           }
         }
 
+        lastPositionRef.current = { x, y };
         positionRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
 
@@ -179,10 +203,29 @@ export default function CloudCtaButton() {
         if (scale !== lastScaleRef.current) {
           lastScaleRef.current = scale;
           baseScaleRef.current.style.transform = `scale(${scale})`;
+          const button = buttonRef.current;
+          const position = positionRef.current;
+          if (button && position) {
+            const bounds = computeBounds(button);
+            if (bounds) {
+              boundsRef.current = bounds;
+              const current = lastPositionRef.current;
+              const x = current
+                ? Math.min(Math.max(current.x, bounds.minX), bounds.maxX)
+                : bounds.maxX;
+              const y = current
+                ? Math.min(Math.max(current.y, bounds.minY), bounds.maxY)
+                : bounds.minY;
+              lastPositionRef.current = { x, y };
+              position.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+            }
+          }
         }
       }
 
-      rafId = window.requestAnimationFrame(animate);
+      if (!motionStoppedRef.current) {
+        rafId = window.requestAnimationFrame(animate);
+      }
     };
 
     rafId = window.requestAnimationFrame(animate);
