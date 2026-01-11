@@ -32,12 +32,6 @@ export default function SpotDetailPopup() {
     }
   };
 
-  const occupancyRate = (
-    ((selectedSpot.totalSeats - selectedSpot.availableSeats) /
-      selectedSpot.totalSeats) *
-    100
-  ).toFixed(0);
-
   const onPointerMove = (ev: PointerEvent) => {
     if (!draggingRef.current) return;
     const rect = containerRef.current?.getBoundingClientRect();
@@ -93,35 +87,6 @@ export default function SpotDetailPopup() {
             {selectedSpot.description}
           </p>
         )}
-
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50">
-            <span className="font-medium text-sm text-gray-700">空き座席</span>
-            <span className="font-bold text-base text-gray-900">
-              {selectedSpot.availableSeats} / {selectedSpot.totalSeats}
-            </span>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs mb-1.5 font-medium text-gray-700">
-              <span>混雑度</span>
-              <span className="text-gray-900">{occupancyRate}%</span>
-            </div>
-            <div className="w-full rounded-full h-2 overflow-hidden bg-gray-200">
-              <div
-                className="h-2 rounded-full transition-all duration-500"
-                style={{
-                  width: `${occupancyRate}%`,
-                  backgroundColor: Number(occupancyRate) < 50
-                    ? '#10b981'
-                    : Number(occupancyRate) < 80
-                      ? '#f59e0b'
-                      : '#ef4444'
-                }}
-              />
-            </div>
-          </div>
-        </div>
 
         <div className="text-xs mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
           登録日: {new Date(selectedSpot.createdAt).toLocaleDateString('ja-JP')}
