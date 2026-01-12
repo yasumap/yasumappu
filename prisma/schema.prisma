@@ -30,6 +30,7 @@ model RestSpot {
   longitude      Float
   totalSeats     Int
   availableSeats Int
+  imageUrl       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

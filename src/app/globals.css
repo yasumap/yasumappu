@@ -64,6 +64,13 @@ body {
   transform: rotate(45deg);
 }
 
+.spot-marker-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50% 50% 50% 0;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

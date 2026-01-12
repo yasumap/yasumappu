@@ -5,7 +5,6 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapStore } from '@/hooks/useMapStore';
 import type { RestSpot } from '@/hooks/useMapStore';
-import { categoryColors, categoryIcons } from '@/lib/categoryIcons';
 import SpotRegistrationModal from '../spots/SpotRegistrationModal';
 import AddSpotButton from './AddSpotButton';
 
@@ -151,9 +150,23 @@ export default function MapContainer({
     spots.forEach((spot) => {
       const el = document.createElement('div');
       el.className = 'spot-marker';
-      el.style.setProperty('--marker-color', categoryColors[spot.category]);
-      el.innerHTML = `<span class="spot-marker-icon">${categoryIcons[spot.category]
-        }</span>`;
+      // 鮮やかな黄色を使用
+      el.style.setProperty('--marker-color', '#FFD700');
+
+      // 画像がある場合は画像を表示、ない場合はデフォルトアイコンを表示
+      if (spot.imageUrl) {
+        const img = document.createElement('img');
+        img.src = spot.imageUrl;
+        img.alt = 'spot';
+        img.className = 'spot-marker-image';
+        el.appendChild(img);
+      } else {
+        const icon = document.createElement('div');
+        icon.className = 'spot-marker-icon';
+        icon.style.cssText = 'width: 20px; height: 20px; background: white; border-radius: 50%;';
+        el.appendChild(icon);
+      }
+
       el.style.cursor = 'pointer';
 
       const marker = new mapboxgl.Marker(el)
