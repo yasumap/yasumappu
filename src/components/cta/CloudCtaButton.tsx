@@ -271,7 +271,7 @@ export default function CloudCtaButton() {
               aria-label="アンケートへ進む"
             >
               <img
-                src="/ボタン用雲.png"
+                src="/cloud.png"
                 alt=""
                 className="cloud-cta-image"
                 onLoad={() => {
