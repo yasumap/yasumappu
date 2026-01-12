@@ -105,11 +105,17 @@ export default function MapContainer({
       });
 
       map.current.on('click', (e) => {
-        setClickedCoordinates({
-          lat: e.lngLat.lat,
-          lng: e.lngLat.lng,
-        });
-        setShowRegistrationModal(true);
+        // マーカーがクリックされた場合は登録モーダルを開かない
+        const features = map.current!.queryRenderedFeatures(e.point);
+        const clickedOnMarker = (e.originalEvent.target as HTMLElement)?.closest('.spot-marker');
+
+        if (!clickedOnMarker) {
+          setClickedCoordinates({
+            lat: e.lngLat.lat,
+            lng: e.lngLat.lng,
+          });
+          setShowRegistrationModal(true);
+        }
       });
 
       map.current.on('moveend', () => {
@@ -166,8 +172,6 @@ export default function MapContainer({
         icon.style.cssText = 'width: 20px; height: 20px; background: white; border-radius: 50%;';
         el.appendChild(icon);
       }
-
-      el.style.cursor = 'pointer';
 
       const marker = new mapboxgl.Marker(el)
         .setLngLat([spot.longitude, spot.latitude])
