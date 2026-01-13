@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 const STORAGE_KEY = 'yasumappu_cloud_cta_clicked';
 const SURVEY_URL = 'https://yasumappu.vercel.app/ui';
 
-const INITIAL_STATIC_MS = 35000;
-const PULSE_DELAY_MS = 15000;
-const MOVE_DURATION_MS = 19231;
+const INITIAL_STATIC_MS = 12500;
+const PULSE_DELAY_MS = 5000;
+const MOVE_DURATION_MS = 9616;
 const REST_DURATION_MS = 10000;
 const MAX_LAPS = 4;
 const SCALE_STEP = 0.1;
@@ -285,7 +285,10 @@ export default function CloudCtaButton() {
                   }
                 }}
               />
-              <span className="cloud-cta-label">次へ</span>
+              <span className="cloud-cta-label">
+                <span className="cloud-cta-label-accent">金額アンケート</span>
+                <span className="cloud-cta-label-accent">ご協力お願いします🙇🏻‍♀️</span>
+              </span>
             </button>
           </div>
         </div>
