@@ -96,13 +96,13 @@ export default function AmountSlider({
           step={1}
           value={currentIndex}
           onChange={(e) => handleChange(Number(e.target.value))}
-          className="slider-input w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200 accent-gray-900"
+          className="slider-input w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200"
           style={{
-            background: `linear-gradient(to right, #1a1a1a 0%, #1a1a1a ${
+            background: `linear-gradient(90deg, #06b6d4 0%, #6366f1 ${
               ((currentIndex - minIndex) / (validMaxIndex - minIndex)) * 100
-            }%, #e5e7eb ${
+            }%, #e6e9ee ${
               ((currentIndex - minIndex) / (validMaxIndex - minIndex)) * 100
-            }%, #e5e7eb 100%)`,
+            }%, #e6e9ee 100%)`,
           }}
         />
 
@@ -118,7 +118,7 @@ export default function AmountSlider({
                 }%`,
               }}
             >
-              <div className="w-px h-2 bg-gray-400 mx-auto" />
+              <div className="w-px h-2 bg-gray-300 mx-auto" />
               <span className="text-xs text-gray-500 whitespace-nowrap mt-1 block">
                 {mark.label}
               </span>
@@ -136,42 +136,43 @@ export default function AmountSlider({
       <style jsx>{`
         .slider-input::-webkit-slider-thumb {
           appearance: none;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #1a1a1a;
+          width: 22px;
+          height: 22px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 3px solid #6366f1;
           cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          transition: all 0.2s;
+          box-shadow: 0 6px 16px rgba(99,102,241,0.18);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .slider-input::-webkit-slider-thumb:hover {
-          transform: scale(1.1);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(99,102,241,0.22);
         }
 
         .slider-input::-webkit-slider-thumb:active {
-          transform: scale(0.95);
+          transform: scale(0.98);
         }
 
         .slider-input::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: #1a1a1a;
+          width: 22px;
+          height: 22px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 3px solid #6366f1;
           cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          transition: all 0.2s;
+          box-shadow: 0 6px 16px rgba(99,102,241,0.18);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .slider-input::-moz-range-thumb:hover {
-          transform: scale(1.1);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(99,102,241,0.22);
         }
 
         .slider-input::-moz-range-thumb:active {
-          transform: scale(0.95);
+          transform: scale(0.98);
         }
       `}</style>
     </div>

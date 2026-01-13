@@ -1,5 +1,6 @@
 import MapContainer from '@/components/map/MapContainer';
 import SpotDetailPopup from '@/components/spots/SpotDetailPopup';
+import CloudCtaButton from '@/components/cta/CloudCtaButton';
 
 export default function Home() {
   return (
@@ -19,6 +20,8 @@ export default function Home() {
         initialZoom={13}
         height="100vh"
       />
+
+      <CloudCtaButton />
 
       <SpotDetailPopup />
     </div>

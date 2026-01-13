@@ -8,10 +8,29 @@ export default function SpotDetailPopup() {
   const { selectedSpot, setSelectedSpot } = useMapStore();
   const { deleteSpot, isDeleting } = useRestSpots();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    totalSeats: 10,
+  });
   const [pos, setPos] = useState<{ top: number; left: number }>({ top: 16, left: 16 });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef(false);
   const offsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (selectedSpot) {
+      setFormData({
+        name: selectedSpot.name,
+        description: selectedSpot.description || '',
+        totalSeats: selectedSpot.totalSeats,
+      });
+      setIsEditing(false);
+      setShowDeleteConfirm(false);
+    }
+  }, [selectedSpot]);
 
   useEffect(() => {
     return () => {
@@ -32,11 +51,41 @@ export default function SpotDetailPopup() {
     }
   };
 
-  const occupancyRate = (
-    ((selectedSpot.totalSeats - selectedSpot.availableSeats) /
-      selectedSpot.totalSeats) *
-    100
-  ).toFixed(0);
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+
+    try {
+      const response = await fetch(`/api/spots/${selectedSpot.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('更新に失敗しました');
+      }
+
+      const updatedSpot = await response.json();
+
+      // ストアを更新
+      const spots = useMapStore.getState().spots;
+      const updatedSpots = spots.map((s) =>
+        s.id === updatedSpot.id ? updatedSpot : s
+      );
+      useMapStore.getState().setSpots(updatedSpots);
+      useMapStore.getState().setSelectedSpot(updatedSpot);
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Update failed:', error);
+      alert('更新に失敗しました');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const onPointerMove = (ev: PointerEvent) => {
     if (!draggingRef.current) return;
@@ -60,6 +109,7 @@ export default function SpotDetailPopup() {
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (isEditing) return; // 編集中はドラッグ無効
     draggingRef.current = true;
     const startX = e.clientX;
     const startY = e.clientY;
@@ -77,8 +127,23 @@ export default function SpotDetailPopup() {
     >
       <div className="rounded-2xl shadow-xl p-4 bg-white/98 backdrop-blur-md border border-gray-200 max-w-sm w-[min(92vw,420px)]">
         <div className="flex justify-between items-start mb-3">
-          <div className="min-w-0 flex-1" onPointerDown={onPointerDown} style={{ touchAction: 'none', cursor: 'grab' }}>
-            <h3 className="text-lg font-bold text-gray-900 truncate">{selectedSpot.name}</h3>
+          <div
+            className="min-w-0 flex-1"
+            onPointerDown={onPointerDown}
+            style={{ touchAction: 'none', cursor: isEditing ? 'default' : 'grab' }}
+          >
+            {isEditing ? (
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full text-lg font-bold text-gray-900 px-2 py-1 rounded border-2 border-gray-300 focus:outline-none focus:border-gray-900"
+                maxLength={100}
+                required
+              />
+            ) : (
+              <h3 className="text-lg font-bold text-gray-900 truncate">{selectedSpot.name}</h3>
+            )}
           </div>
           <button
             onClick={() => setSelectedSpot(null)}
@@ -88,55 +153,96 @@ export default function SpotDetailPopup() {
           </button>
         </div>
 
-        {selectedSpot.description && (
-          <p className="mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-700 text-sm">
-            {selectedSpot.description}
-          </p>
-        )}
-
-        <div className="space-y-2 mb-4">
-          <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50">
-            <span className="font-medium text-sm text-gray-700">空き座席</span>
-            <span className="font-bold text-base text-gray-900">
-              {selectedSpot.availableSeats} / {selectedSpot.totalSeats}
-            </span>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs mb-1.5 font-medium text-gray-700">
-              <span>混雑度</span>
-              <span className="text-gray-900">{occupancyRate}%</span>
-            </div>
-            <div className="w-full rounded-full h-2 overflow-hidden bg-gray-200">
-              <div
-                className="h-2 rounded-full transition-all duration-500"
-                style={{
-                  width: `${occupancyRate}%`,
-                  backgroundColor: Number(occupancyRate) < 50
-                    ? '#10b981'
-                    : Number(occupancyRate) < 80
-                      ? '#f59e0b'
-                      : '#ef4444'
-                }}
+        {isEditing ? (
+          <form onSubmit={handleUpdate} className="space-y-3 mb-3">
+            <div>
+              <label className="block text-xs font-bold mb-1.5 text-gray-700">
+                説明（任意）
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                maxLength={500}
+                rows={3}
+                className="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-gray-400"
+                placeholder="このスポットについて詳細があれば教えてね！"
               />
             </div>
-          </div>
-        </div>
 
-        <div className="text-xs mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
-          登録日: {new Date(selectedSpot.createdAt).toLocaleDateString('ja-JP')}
-        </div>
+            <div>
+              <label className="block text-xs font-bold mb-1.5 text-gray-700">
+                総座席数
+              </label>
+              <input
+                type="number"
+                value={formData.totalSeats}
+                onChange={(e) => setFormData({ ...formData, totalSeats: parseInt(e.target.value) || 0 })}
+                required
+                min={1}
+                max={1000}
+                className="w-full px-3 py-2 text-sm rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:border-gray-400"
+              />
+            </div>
 
-        {!showDeleteConfirm && (
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="w-full py-3 rounded-xl font-medium text-sm transition-all duration-200 active:bg-gray-100 border-2 border-gray-300 text-gray-700"
-          >
-            削除
-          </button>
+            <div className="flex space-x-2 pt-2">
+              <button
+                type="submit"
+                disabled={isUpdating}
+                className="flex-1 py-3 rounded-xl text-white font-bold text-sm transition-all duration-200 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                style={{
+                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+                }}
+              >
+                {isUpdating ? '更新中...' : '保存'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false);
+                  setFormData({
+                    name: selectedSpot.name,
+                    description: selectedSpot.description || '',
+                    totalSeats: selectedSpot.totalSeats,
+                  });
+                }}
+                className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 border-2 border-gray-300 text-gray-700 active:bg-gray-100"
+              >
+                キャンセル
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
+            {selectedSpot.description && (
+              <p className="mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-700 text-sm">
+                {selectedSpot.description}
+              </p>
+            )}
+
+            <div className="text-xs mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
+              登録日: {new Date(selectedSpot.createdAt).toLocaleDateString('ja-JP')}
+            </div>
+
+            {!showDeleteConfirm && (
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 active:bg-gray-100 border-2 border-gray-900 text-gray-900"
+                >
+                  編集
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 active:bg-gray-100 border-2 border-gray-300 text-gray-700"
+                >
+                  削除
+                </button>
+              </div>
+            )}
+          </>
         )}
 
-        {showDeleteConfirm && (
+        {showDeleteConfirm && !isEditing && (
           <div className="space-y-2 animate-scale-in">
             <p className="text-sm font-medium text-center p-3 rounded-lg bg-red-50 text-red-700 border border-red-200">
               本当にこのスポットを削除しますか？

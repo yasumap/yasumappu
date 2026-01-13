@@ -7,14 +7,11 @@ export interface RestSpot {
   description?: string | null;
   latitude: number;
   longitude: number;
-  category: string;
   totalSeats: number;
   availableSeats: number;
+  imageUrl?: string | null;
   createdAt: string;
-  createdBy: {
-    id: string;
-    email: string;
-  };
+  updatedAt: string;
 }
 
 interface MapStore {

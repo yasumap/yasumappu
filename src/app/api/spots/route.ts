@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
         longitude: validated.longitude,
         totalSeats: validated.totalSeats,
         availableSeats: validated.totalSeats,
+        imageUrl: '/images/bench.png',
       },
     });
 
