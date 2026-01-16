@@ -37,13 +37,13 @@ export default function AddSpotButton({
       <button
         onClick={handleAddAtCurrentLocation}
         disabled={isGettingLocation}
-        className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full shadow-lg flex items-center justify-center font-bold text-white animate-scale-in disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+        className="fixed bottom-6 right-4 z-30 w-16 h-16 rounded-full shadow-lg flex items-center justify-center font-bold text-white animate-scale-in disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
         style={{
           background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
         }}
         aria-label={isGettingLocation ? '取得中...' : '現在地に追加'}
       >
-        <span className="text-2xl">{isGettingLocation ? '...' : '+'}</span>
+        <span className="text-3xl">{isGettingLocation ? '...' : '+'}</span>
       </button>
 
       {coordinates && (
