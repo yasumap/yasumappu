@@ -48,10 +48,10 @@ export default function SurveyPage() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            金額アンケート
+            ご利用ありがとうございます！！！！
           </h1>
           <p className="text-gray-600">
-            お客様のご意見をお聞かせください
+            やすまっぷに感じる価値をお聞かせください
           </p>
         </div>
 

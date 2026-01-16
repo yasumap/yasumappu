@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const STORAGE_KEY = 'yasumappu_cloud_cta_clicked';
 const SURVEY_URL = 'https://yasumappu.vercel.app/ui';
@@ -270,9 +271,11 @@ export default function CloudCtaButton() {
               onClick={handleClick}
               aria-label="アンケートへ進む"
             >
-              <img
+              <Image
                 src="/cloud.png"
                 alt=""
+                width={120}
+                height={80}
                 className="cloud-cta-image"
                 onLoad={() => {
                   const button = buttonRef.current;
