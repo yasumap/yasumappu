@@ -111,7 +111,6 @@ export default function MapContainer({
 
       map.current.on('click', (e) => {
         // マーカーがクリックされた場合は登録モーダルを開かない
-        const features = map.current!.queryRenderedFeatures(e.point);
         const clickedOnMarker = (e.originalEvent.target as HTMLElement)?.closest('.spot-marker');
 
         if (!clickedOnMarker) {
