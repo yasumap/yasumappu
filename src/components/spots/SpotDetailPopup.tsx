@@ -15,7 +15,7 @@ export default function SpotDetailPopup() {
     description: '',
     totalSeats: 10,
   });
-  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 16, left: 16 });
+  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 8, left: 8 });
   const containerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef(false);
   const offsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -30,6 +30,16 @@ export default function SpotDetailPopup() {
       setIsEditing(false);
       setShowDeleteConfirm(false);
     }
+  }, [selectedSpot]);
+
+  // 初期表示時は左上（ヘッダー下）に小さく寄せる
+  useEffect(() => {
+    if (!selectedSpot) return;
+    const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0;
+    const left = 8;
+    const top = Math.max(8, headerHeight + 8);
+    // 少し遅延して描画後に位置を確定
+    requestAnimationFrame(() => setPos({ top, left }));
   }, [selectedSpot]);
 
   useEffect(() => {
@@ -125,7 +135,7 @@ export default function SpotDetailPopup() {
       className="z-40 animate-slide-up"
       style={{ position: 'fixed', top: pos.top, left: pos.left }}
     >
-      <div className="rounded-2xl shadow-xl p-4 bg-white/98 backdrop-blur-md border border-gray-200 max-w-sm w-[min(92vw,420px)]">
+      <div className="rounded-md shadow-sm p-1 bg-white/98 backdrop-blur-md border border-gray-200 max-w-[240px] w-[min(86vw,240px)] text-xs">
         <div className="flex justify-between items-start mb-3">
           <div
             className="min-w-0 flex-1"
@@ -137,17 +147,17 @@ export default function SpotDetailPopup() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full text-lg font-bold text-gray-900 px-2 py-1 rounded border-2 border-gray-300 focus:outline-none focus:border-gray-900"
+                className="w-full text-sm font-semibold text-gray-900 px-1 py-1 rounded border-2 border-gray-300 focus:outline-none focus:border-gray-900"
                 maxLength={100}
                 required
               />
             ) : (
-              <h3 className="text-lg font-bold text-gray-900 truncate">{selectedSpot.name}</h3>
+              <h3 className="text-sm font-semibold text-gray-900 truncate">{selectedSpot.name}</h3>
             )}
           </div>
           <button
             onClick={() => setSelectedSpot(null)}
-            className="text-gray-400 active:text-gray-600 text-2xl transition-all duration-200 ml-2 w-8 h-8 flex items-center justify-center flex-shrink-0"
+            className="text-gray-400 active:text-gray-600 text-xl transition-all duration-200 ml-2 w-6 h-6 flex items-center justify-center flex-shrink-0"
           >
             ×
           </button>
@@ -214,50 +224,49 @@ export default function SpotDetailPopup() {
         ) : (
           <>
             {selectedSpot.description && (
-              <p className="mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-700 text-sm">
+              <p className="mb-2 px-2 py-1 rounded bg-gray-50 text-gray-700 text-xs">
                 {selectedSpot.description}
               </p>
             )}
-
-            <div className="text-xs mb-3 px-3 py-2 rounded-lg bg-gray-50 text-gray-600">
-              登録日: {new Date(selectedSpot.createdAt).toLocaleDateString('ja-JP')}
-            </div>
-
-            {!showDeleteConfirm && (
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 active:bg-gray-100 border-2 border-gray-900 text-gray-900"
-                >
-                  編集
-                </button>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 active:bg-gray-100 border-2 border-gray-300 text-gray-700"
-                >
-                  削除
-                </button>
+              <div className="text-xs mb-2 px-2 py-1 rounded bg-gray-50 text-gray-600">
+                登録日: {new Date(selectedSpot.createdAt).toLocaleDateString('ja-JP')}
               </div>
-            )}
+
+              {!showDeleteConfirm && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex-1 py-2 rounded-lg font-medium text-xs transition-all duration-200 active:bg-gray-100 border-2 border-gray-900 text-gray-900"
+                  >
+                    編集
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex-1 py-2 rounded-lg font-medium text-xs transition-all duration-200 active:bg-gray-100 border-2 border-gray-300 text-gray-700"
+                  >
+                    削除
+                  </button>
+                </div>
+              )}
           </>
         )}
 
         {showDeleteConfirm && !isEditing && (
-          <div className="space-y-2 animate-scale-in">
-            <p className="text-sm font-medium text-center p-3 rounded-lg bg-red-50 text-red-700 border border-red-200">
+            <div className="space-y-2 animate-scale-in">
+            <p className="text-xs font-medium text-center p-2 rounded bg-red-50 text-red-700 border border-red-200">
               本当にこのスポットを削除しますか？
             </p>
             <div className="flex space-x-2">
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1 py-3 rounded-xl font-medium text-sm text-white transition-all duration-200 active:opacity-80 disabled:opacity-50 bg-red-600"
+                className="flex-1 py-2 rounded-lg font-medium text-xs text-white transition-all duration-200 active:opacity-80 disabled:opacity-50 bg-red-600"
               >
                 {isDeleting ? '削除中...' : '削除する'}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-3 rounded-xl font-medium text-sm transition-all duration-200 border-2 border-gray-300 text-gray-700 active:bg-gray-100"
+                className="flex-1 py-2 rounded-lg font-medium text-xs transition-all duration-200 border-2 border-gray-300 text-gray-700 active:bg-gray-100"
               >
                 キャンセル
               </button>
