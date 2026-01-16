@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
+import { createLanguageControl, MAPBOX_STYLE_STREETS } from '@/lib/mapLanguage';
 import { useMapStore } from '@/hooks/useMapStore';
 import type { RestSpot } from '@/hooks/useMapStore';
 import SpotRegistrationModal from '../spots/SpotRegistrationModal';
@@ -20,7 +22,7 @@ export default function MapContainer({
   initialLongitude = 139.7671,
   initialLatitude = 35.6812,
   initialZoom = 13,
-  style = 'mapbox://styles/mapbox/streets-v12',
+  style = MAPBOX_STYLE_STREETS,
   height = '100vh',
 }: MapContainerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -80,6 +82,9 @@ export default function MapContainer({
         }),
         'bottom-left'
       );
+
+      // マップのラベルを日本語化
+      map.current.addControl(createLanguageControl('ja'));
 
       map.current.on('load', () => {
         setMapLoaded(true);
