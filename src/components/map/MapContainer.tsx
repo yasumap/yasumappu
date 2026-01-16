@@ -404,12 +404,11 @@ export default function MapContainer({
 
         <button
           onClick={handleShowNearestBench}
-          className="fixed bottom-20 right-6 z-40 w-14 h-14 rounded-full shadow-lg flex items-center justify-center font-bold text-white animate-scale-in disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
+          className="fixed bottom-24 right-4 z-40 px-5 py-4 rounded-full shadow-lg font-bold text-white text-base animate-scale-in disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 active:scale-95"
           style={{ background: 'linear-gradient(135deg, #0ea5a4 0%, #0284c7 100%)' }}
           aria-label="最寄りのベンチを表示"
-          title="最寄りのベンチ"
         >
-          <span className="text-2xl">📍</span>
+          最寄りを探す
         </button>
       </div>
     </>
